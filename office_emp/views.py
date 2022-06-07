@@ -1,7 +1,7 @@
 from django.shortcuts import render,HttpResponse
 from .models import Department, Role, Employee
 from .forms import EmployeeForm,DepartmentForm
-
+from django.db.models import Q # Q>method for operator
 # Create your views here.
 def index(request):
     return render(request, 'index.html')
@@ -48,8 +48,19 @@ def remove_emp(request):
     return render(request, 'remove_emp.html',context)
 
 def search_emp(request):
-    return render(request, 'search_emp.html')
-
-
-
+    search_id = request.GET.get("search", None) #function
+    print(search_id)
+    if  search_id != None:
+        
+        emps = Employee.objects.filter(Q(first_name__icontains= search_id ) | Q(last_name__icontains= search_id))
+        return render(request, 'search_emp.html',{'emps': emps},)
+    else :
+    
+        emps = Employee.objects.all()
+        context ={
+            'emps' : emps
+                
+        }
+        
+        return render(request, 'search_emp.html',context)
 
